@@ -104,6 +104,44 @@
        document.querySelector('#search').addEventListener('keyup', this.search.bind(this));
 
      },
+     deleteJar: function(event){
+       //millele vajutasin SPAN
+       console.log(event.target);
+
+       //tema parent ehk mille sees ta on LI
+       console.log(event.target.parentNode);
+
+       //mille sees see on UL
+       console.log(event.target.parentNode.parentNode);
+       //id
+       console.log(event.target.dataset.id);
+
+       var c = confirm("Oled kindel?");
+       //vajutas no, pani ristist kinni
+       if(!c){ return; }
+       //KUSTUTAN
+       console.log('kustutan');
+
+       //KUSTUTAN htmli
+       var ul = event.target.parentNode.parentNode;
+       var li = event.target.parentNode;
+
+       ul.removeChild(li);
+
+       //KUSTUTAN objekti ja uuendan localStorageist
+       var delete_id = event.target.dataset.id;
+       for(var i=0; i < this.jars.length; i++){
+         if(this.jars[i].id == delete_id){
+           //see on see
+           //kustuta koha i objekt ära.
+           this.jars.splice(i, 1);
+           break;
+         }
+       }
+
+       localStorage.setItem('jars', JSON.stringify(this.jars));
+
+     },
 
      search: function(event){
          //otsikasti vÃ¤Ã¤rtus
@@ -241,6 +279,9 @@
 	   span_delete.innerHTML = " Delete";
 
 	   li.appendChild(span_delete);
+
+     //keegi vajutas nuppu
+     span_delete.addEventListener("click", Moosipurk.instance.deleteJar.bind(Moosipurk.instance));
 
 
 
