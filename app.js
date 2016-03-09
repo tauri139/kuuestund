@@ -104,45 +104,53 @@
        document.querySelector('#search').addEventListener('keyup', this.search.bind(this));
 
      },
-     deleteJar: function(event){
-       //millele vajutasin SPAN
-       console.log(event.target);
+	 deleteJar: function(event){
 
-       //tema parent ehk mille sees ta on LI
-       console.log(event.target.parentNode);
+		// millele vajutasin SPAN
+		console.log(event.target);
 
-       //mille sees see on UL
-       console.log(event.target.parentNode.parentNode);
-       //id
-       console.log(event.target.dataset.id);
+		// tema parent ehk mille sees ta on LI
+		console.log(event.target.parentNode);
 
-       var c = confirm("Oled kindel?");
-       //vajutas no, pani ristist kinni
-       if(!c){ return; }
-       //KUSTUTAN
-       console.log('kustutan');
+		//mille sees see on UL
+		console.log(event.target.parentNode.parentNode);
 
-       //KUSTUTAN htmli
-       var ul = event.target.parentNode.parentNode;
-       var li = event.target.parentNode;
+		//id
+		console.log(event.target.dataset.id);
 
-       ul.removeChild(li);
+		var c = confirm("Oled kindel?");
 
-       //KUSTUTAN objekti ja uuendan localStorageist
-       var delete_id = event.target.dataset.id;
-       for(var i=0; i < this.jars.length; i++){
-         if(this.jars[i].id == delete_id){
-           //see on see
-           //kustuta koha i objekt ära.
-           this.jars.splice(i, 1);
-           break;
-         }
-       }
+		// vajutas no, pani ristist kinni
+		if(!c){	return; }
 
-       localStorage.setItem('jars', JSON.stringify(this.jars));
+		//KUSTUTAN
+		console.log('kustutan');
 
-     },
+		// KUSTUTAN HTMLI
+		var ul = event.target.parentNode.parentNode;
+		var li = event.target.parentNode;
 
+		ul.removeChild(li);
+
+		//KUSTUTAN OBJEKTI ja uuenda localStoragit
+
+		var delete_id = event.target.dataset.id;
+
+		for(var i = 0; i < this.jars.length; i++){
+
+			if(this.jars[i].id == delete_id){
+				//see on see
+				//kustuta kohal i objekt Ã¤ra
+				this.jars.splice(i, 1);
+				break;
+			}
+		}
+
+		localStorage.setItem('jars', JSON.stringify(this.jars));
+
+
+
+	 },
      search: function(event){
          //otsikasti vÃ¤Ã¤rtus
          var needle = document.querySelector('#search').value.toLowerCase();
@@ -181,13 +189,34 @@
 
        //console.log(title + ' ' + ingredients);
        //1) tekitan uue Jar'i
-       var new_jar = new Jar(guid(), title, ingredients);
+	   var id = guid();
+       var new_jar = new Jar(id, title, ingredients);
 
        //lisan massiiivi purgi
        this.jars.push(new_jar);
        console.log(JSON.stringify(this.jars));
        // JSON'i stringina salvestan localStorage'isse
        localStorage.setItem('jars', JSON.stringify(this.jars));
+
+
+		//AJAX
+		var xhttp = new XMLHttpRequest();
+
+		//mis juhtub kui pÃ¤ring lÃµppeb
+		xhttp.onreadystatechange = function() {
+
+			console.log(xhttp.readyState);
+
+			if (xhttp.readyState == 4 && xhttp.status == 200) {
+
+				console.log(xhttp.responseText);
+			}
+		};
+
+		//teeb pÃ¤ringu
+		xhttp.open("GET", "save.php?id="+id+"&title="+title+"&ingredients="+ingredients, true);
+		xhttp.send();
+
 
        // 2) lisan selle htmli listi juurde
        var li = new_jar.createHtmlElement();
@@ -280,10 +309,8 @@
 
 	   li.appendChild(span_delete);
 
-     //keegi vajutas nuppu
-     span_delete.addEventListener("click", Moosipurk.instance.deleteJar.bind(Moosipurk.instance));
-
-
+	   //keegi vajutas nuppu
+	   span_delete.addEventListener("click", Moosipurk.instance.deleteJar.bind(Moosipurk.instance));
 
        return li;
 
